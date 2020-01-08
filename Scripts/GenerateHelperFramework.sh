@@ -49,7 +49,7 @@ xcodebuild ARCHS="armv7 armv7s arm64 i386 x86_64" \
     -workspace "${project_path}/AWSMobileHubHelper.xcworkspace" \
     -scheme "${project_name}" \
     -sdk iphonesimulator \
-    SYMROOT=$(PWD)/builtFramework \
+    SYMROOT=$(PWD)/builtFrameworkDebug/ \
     clean build
 
 exitOnFailureCode $?
@@ -61,7 +61,7 @@ xcodebuild ARCHS="armv7 armv7s arm64 i386 x86_64" \
     -workspace "${project_path}/AWSMobileHubHelper.xcworkspace" \
     -scheme "${project_name}" \
     -sdk iphoneos \
-    SYMROOT=$(PWD)/builtFramework \
+    SYMROOT=$(PWD)/builtFrameworkRelease/ \
     clean build
 
 exitOnFailureCode $?
@@ -90,8 +90,8 @@ mkdir -p $FRAMEWORK_DIR/Headers
 # framework with no .a extension.
 echo "Framework: Creating library..."
 lipo -create \
-    "builtFramework/Debug-iphonesimulator/lib${project_name}.a" \
-    "builtFramework/Release-iphoneos/lib${project_name}.a" \
+    "builtFrameworkDebug/Debug-iphonesimulator/lib${project_name}.a" \
+    "builtFrameworkRelease/Release-iphoneos/lib${project_name}.a" \
     -o "$FRAMEWORK_DIR/$FRAMEWORK_NAME"
 
 exitOnFailureCode $?
@@ -100,10 +100,10 @@ exitOnFailureCode $?
 # header files and service definition json files
 echo "Framework: Copying public headers into current version..."
 #those headers are declared in xcode's building phase: Headers
-cp -a builtFramework/Release-iphoneos/include/${project_name}/*.h $FRAMEWORK_DIR/Headers/
+cp -a builtFrameworkRelease/Release-iphoneos/include/${project_name}/*.h $FRAMEWORK_DIR/Headers/
 exitOnFailureCode $?
 
 echo "Framework: Copying the module map into current version..."
 #those headers are declared in xcode's building phase: Headers
-cp -a builtFramework/Release-iphoneos/include/${project_name}/${project_name}.modulemap $FRAMEWORK_DIR/Modules/module.modulemap
+cp -a builtFrameworkRelease/Release-iphoneos/include/${project_name}/${project_name}.modulemap $FRAMEWORK_DIR/Modules/module.modulemap
 exitOnFailureCode $?
